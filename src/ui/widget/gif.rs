@@ -92,7 +92,6 @@ impl Frames {
 
         let frames = decoder
             .into_frames()
-            .into_iter()
             .map(|result| result.map(Frame::from))
             .collect::<Result<Vec<_>, _>>()?;
 

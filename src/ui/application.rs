@@ -52,16 +52,24 @@ impl Application for MainApp {
         match message {
             Message::BanAhri => {
                 if self.is_path_valid {
-                    self.show_ahri_gif = true;
+
                     self.is_banning_ahri = true;
                     Command::perform(ban_ahri(self.riot_path.clone()), Message::AhriBanned)
                 } else {
                     Command::none()
                 }
             }
-            Message::AhriBanned(_) => {
+            Message::AhriBanned(result) => {
                 self.is_banning_ahri = false;
-                Command::perform(wait_n_millis(1400), |_| Message::StopShowAhriGif)
+
+                if let Err(err) = result {
+                    println!("Failed to ban Ahri: {:?}", err);
+                    Command::none()
+                } else {
+                    self.show_ahri_gif = true;
+                    Command::perform(wait_n_millis(1400), |_| Message::StopShowAhriGif)
+                }
+
             }
             Message::RiotPathChanged(path) => {
                 self.riot_path = path;
@@ -99,7 +107,7 @@ impl Application for MainApp {
                 )
                 .push(
                     if self.show_ahri_gif {
-                        container(gif(&self.frames.as_ref().unwrap()))
+                        container(gif(self.frames.as_ref().unwrap()))
                             .center_x()
                             .center_y()
                             .width(Length::Fill)

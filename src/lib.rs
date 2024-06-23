@@ -4,7 +4,6 @@ pub mod ui;
 pub mod errors;
 
 pub const AHRI_ID: i32 = 103;
-pub const DEFAULT_THREAD_WAIT_TIME:u64 = 100;
 
 
 #[derive(Debug, Clone)]

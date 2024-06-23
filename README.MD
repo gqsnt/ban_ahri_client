@@ -1,15 +1,14 @@
 # Ban Ahri Client
 
-This is a Rust application that automatically bans the champion Ahri during the champion select phase in League of Legends. The application uses the Riot API and is built with asynchronous Rust and the Iced GUI library.
+This is a Rust application that allows you to manually ban the champion Ahri during the champion select phase in League of Legends. The application uses the Riot API and is built with asynchronous Rust and the Iced GUI library.
 
-
-![Alt text](images/ban_ahri_client.gif)
+![Main Screen](images/ban_ahri_client.gif)
 
 ## Features
 
-- Automatically ban Ahri during the champion select phase.
-- Simple GUI to start and stop the automatic ban process.
-- Configurable thread wait time for checking the champion select session.
+- Manually ban Ahri during the champion select phase.
+- Simple GUI to initiate the ban process.
+- Displays a GIF when Ahri is successfully banned.
 
 ## Requirements
 
@@ -48,11 +47,7 @@ This is a Rust application that automatically bans the champion Ahri during the 
 
 2. Enter the Riot Games installation path in the provided text input field.
 
-3. Click the "Start Ban Ahri" button to begin automatically banning Ahri if you enter ban phase in the champion select phase.
+3. Click the "Ban Ahri" button to ban Ahri if you are in the ban phase of the champion select phase.
 
-4. Click the "Stop Ban Ahri" button to stop the process.
-
-5. Adjust the thread wait time if needed to change how often the application checks for the champion select phase.
-
-
+4. A GIF will be displayed when Ahri is successfully banned.
 

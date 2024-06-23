@@ -58,6 +58,7 @@ pub async fn start_ban_ahri_thread(riot_path: String, thread_wait_time:u64) -> A
                     // Check if it's the ban phase && if Ahri is not already banned
                     if champ_select_session.timer.phase != "BAN_PICK"
                         || champ_select_session.bans.my_team_bans.iter().any(|&champion_id| champion_id == AHRI_ID)
+                        || champ_select_session.bans.their_team_bans.iter().any(|&champion_id| champion_id == AHRI_ID)
                     {
                         continue;
                     }

@@ -31,6 +31,7 @@ pub async fn start_ban_ahri_thread(riot_path: String, thread_wait_time:u64) -> A
         loop {
             tokio::time::sleep(tokio::time::Duration::from_millis(thread_wait_time)).await;
 
+            // Check if we should stop the thread(App message)
             if rx.try_recv().is_ok() {
                 break;
             }
@@ -51,6 +52,7 @@ pub async fn start_ban_ahri_thread(riot_path: String, thread_wait_time:u64) -> A
             }
 
             let start = std::time::Instant::now();
+            // check if we are in champ select
             match client.get_champ_select_session().await {
                 Ok(champ_select_session) => {
                     // Check if it's the ban phase && if Ahri is not already banned
@@ -59,7 +61,6 @@ pub async fn start_ban_ahri_thread(riot_path: String, thread_wait_time:u64) -> A
                     {
                         continue;
                     }
-
                     // find the correct action and ban Ahri
                     for actions in &champ_select_session.actions {
                         for action in actions {

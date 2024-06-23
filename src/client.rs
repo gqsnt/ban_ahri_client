@@ -15,71 +15,35 @@ pub fn check_riot_path(riot_path: String) -> bool {
     PathBuf::from(riot_path).join("League of Legends").exists()
 }
 
-pub async fn start_client(riot_path: String) -> AppResult<(LolClient, String)> {
+
+pub async fn ban_ahri(riot_path: String) -> AppResult<()> {
+    let start = std::time::Instant::now();
     let client = LolClient::new(riot_path)?;
-    let user_session = client.get_user_session().await?;
-    user_session["puuid"].as_str()
-        .map(|puuid| (client, puuid.to_string()))
-        .ok_or(AppError::RiotClientError("Client Not Started".to_string()))
-}
-
-pub async fn start_ban_ahri_thread(riot_path: String, thread_wait_time:u64) -> AppResult<Arc<Mutex<mpsc::Sender<bool>>>> {
-    let (tx, mut rx) = mpsc::channel(1);
-    let arc_mutex_tx = Arc::new(Mutex::new(tx));
-    tokio::spawn(async move {
-        let mut riot_client: Option<LolClient> = None;
-        loop {
-            tokio::time::sleep(tokio::time::Duration::from_millis(thread_wait_time)).await;
-
-            // Check if we should stop the thread(App message)
-            if rx.try_recv().is_ok() {
-                break;
+    match client.get_champ_select_session().await {
+        Ok(champ_select_session) => {
+            // Check if it's the ban phase && if Ahri is not already banned
+            if champ_select_session.timer.phase != "BAN_PICK"
+                || champ_select_session.bans.my_team_bans.iter().any(|&champion_id| champion_id == AHRI_ID)
+                || champ_select_session.bans.their_team_bans.iter().any(|&champion_id| champion_id == AHRI_ID)
+            {
+                return Ok(());
             }
-
-            // Initialize Riot client if not already done
-            if riot_client.is_none() {
-                match start_client(riot_path.clone()).await {
-                    Ok((client, _)) => riot_client = Some(client),
-                    Err(_) => continue,
-                }
-            }
-
-            let client = riot_client.as_ref().expect("Client should be initialized");
-            // reset if not connected to the client
-            if client.get_user_session().await.is_err() {
-                riot_client = None;
-                continue;
-            }
-
-            let start = std::time::Instant::now();
-            // check if we are in champ select
-            match client.get_champ_select_session().await {
-                Ok(champ_select_session) => {
-                    // Check if it's the ban phase && if Ahri is not already banned
-                    if champ_select_session.timer.phase != "BAN_PICK"
-                        || champ_select_session.bans.my_team_bans.iter().any(|&champion_id| champion_id == AHRI_ID)
-                        || champ_select_session.bans.their_team_bans.iter().any(|&champion_id| champion_id == AHRI_ID)
-                    {
-                        continue;
-                    }
-                    // find the correct action and ban Ahri
-                    for actions in &champ_select_session.actions {
-                        for action in actions {
-                            if action.actor_cell_id == champ_select_session.local_player_cell_id && action.type_field == "ban" {
-                                if let Err(err) = client.ban_champion(AHRI_ID, action.id).await {
-                                    println!("Failed to ban Ahri: {:?}", err);
-                                }else{
-                                    println!("Ahri banned in {:?}ms", start.elapsed().as_millis());
-                                }
-                            }
+            // find the correct action and ban Ahri
+            for actions in &champ_select_session.actions {
+                for action in actions {
+                    if action.actor_cell_id == champ_select_session.local_player_cell_id && action.type_field == "ban" {
+                        if let Err(err) = client.ban_champion(AHRI_ID, action.id).await {
+                            println!("Failed to ban Ahri: {:?}", err);
+                        }else{
+                            println!("Ahri banned in {:?}ms", start.elapsed().as_millis());
                         }
                     }
                 }
-                Err(_) => continue,
             }
         }
-    });
-    Ok(arc_mutex_tx)
+        Err(_) => return Ok(()),
+    }
+    Ok(())
 }
 
 

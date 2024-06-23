@@ -28,3 +28,8 @@ impl From<reqwest::Error> for AppError {
 
 
 pub type AppResult<T> = Result<T, AppError>;
+
+
+pub async fn wait_n_millis(n: u64) {
+    tokio::time::sleep(std::time::Duration::from_millis(n)).await;
+}

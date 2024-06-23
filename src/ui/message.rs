@@ -4,17 +4,23 @@ use iced_box::icon::LoadingResult;
 use tokio::sync::{mpsc, Mutex};
 
 use crate::AppResult;
+use crate::ui::widget::gif;
 
 #[derive(Debug, Clone)]
 pub enum Message {
     FontLoaded(LoadingResult),
     StartBanAhri,
     BanAhriStarted(AppResult<Arc<Mutex<mpsc::Sender<bool>>>>),
+    StopShowAhriGif,
     StopBanAhri,
     BanAhriStopped(AppResult<()>),
     RiotPathChanged(String),
     ThreadWaitTimeChanged(u64),
+    GifLoaded(Result<gif::Frames, gif::Error>),
 }
+
+
+
 
 
 

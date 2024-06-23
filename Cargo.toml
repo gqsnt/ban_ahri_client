@@ -15,6 +15,13 @@ iced-box = {version = "0.5.0", features = ["material_icons"]}
 base64 = "0.22.1"
 serde_derive = "1.0.203"
 thiserror = "1.0.61"
+image_rs = { version = "0.24", features = ["gif"], package = "image" }
+iced_widget = { version = "0.12.3", features = ["image"] }
+iced_futures = "0.12.0"
+
+[features]
+
+
 
 [profile.release]
 lto = "fat"

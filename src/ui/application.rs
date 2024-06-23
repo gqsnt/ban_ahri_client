@@ -1,3 +1,4 @@
+use std::path::PathBuf;
 use std::sync::Arc;
 
 use iced::{Application, executor, Length};
@@ -8,9 +9,9 @@ use iced_box::icon::material::{load_material_font, Material};
 use tokio::sync::{mpsc, Mutex};
 
 use crate::client::{check_riot_path, start_ban_ahri_thread, stop_ban_ahri_thread};
-use crate::DEFAULT_THREAD_WAIT_TIME;
+use crate::{DEFAULT_THREAD_WAIT_TIME, wait_n_millis};
 use crate::ui::message::Message;
-use crate::ui::widget::{custom_button, icons_builder};
+use crate::ui::widget::{custom_button, gif, icons_builder};
 use crate::ui::widget::custom_button::custom_button;
 
 pub struct MainApp {
@@ -19,7 +20,8 @@ pub struct MainApp {
     ban_ahri_sender: Option<Arc<Mutex<mpsc::Sender<bool>>>>,
     riot_path: String,
     thread_wait_time: u64,
-
+    show_ahri_gif: bool,
+    frames:Option<gif::Frames>
 }
 
 
@@ -39,8 +41,11 @@ impl Application for MainApp {
             thread_wait_time: DEFAULT_THREAD_WAIT_TIME,
             is_path_valid,
             riot_path,
+            show_ahri_gif: false,
+            frames:None
         }, Command::batch(vec![
             load_material_font().map(Message::FontLoaded),
+            gif::Frames::load_from_path(PathBuf::from("assets").join("ahri_by.gif")).map(Message::GifLoaded)
         ]))
     }
 
@@ -68,7 +73,8 @@ impl Application for MainApp {
             Message::BanAhriStarted(sender) => {
                 self.is_banning_ahri = true;
                 self.ban_ahri_sender = Some(sender.unwrap());
-                Command::none()
+                self.show_ahri_gif = true;
+                Command::perform(wait_n_millis(1400), |_| Message::StopShowAhriGif)
             }
             Message::BanAhriStopped(_) => {
                 self.is_banning_ahri = false;
@@ -82,6 +88,14 @@ impl Application for MainApp {
             }
             Message::ThreadWaitTimeChanged(time) => {
                 self.thread_wait_time = time.max(1);
+                Command::none()
+            }
+            Message::GifLoaded(frames) => {
+                self.frames = frames.ok();
+                Command::none()
+            }
+            Message::StopShowAhriGif => {
+                self.show_ahri_gif = false;
                 Command::none()
             }
             _ => { Command::none() }
@@ -116,19 +130,28 @@ impl Application for MainApp {
                     .spacing(10))
                 .push(
                     if self.is_banning_ahri {
-                        custom_button("Stop Ban Ahri")
-                            .style(custom_button::danger)
-                            .padding([30, 110])
-                            .on_press(Message::StopBanAhri)
-                            .width(Length::Fill)
-                            .height(Length::Fill)
+                        if self.show_ahri_gif && self.frames.is_some(){
+                            container(gif(&self.frames.as_ref().unwrap()))
+                                .center_x()
+                                .center_y()
+                                .width(Length::Fill)
+                                .height(Length::Fill)
+                        } else {
+                            container(custom_button("Stop Ban Ahri")
+                                .style(custom_button::danger)
+                                .padding([30, 110])
+                                .on_press(Message::StopBanAhri)
+                                .width(Length::Fill)
+                                .height(Length::Fill))
+                        }
+
                     } else {
-                        custom_button("Start Ban Ahri")
+                        container(custom_button("Start Ban Ahri")
                             .style(custom_button::primary)
                             .padding([30, 110])
                             .on_press(Message::StartBanAhri)
                             .width(Length::Fill)
-                            .height(Length::Fill)
+                            .height(Length::Fill))
                     }
                 )
                 .spacing(20)

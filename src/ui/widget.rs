@@ -5,9 +5,18 @@ use iced_box::icon::material::{Material, material_font};
 
 use crate::ui::message::Message;
 use crate::ui::widget::custom_button::{custom_button, CustomButton};
+use crate::ui::widget::gif::Gif;
 
 pub mod circle;
 pub mod custom_button;
+
+// from https://github.com/tarkah/iced_gif with clone
+pub mod gif;
+pub fn gif(frames: &gif::Frames) -> Gif {
+    Gif::new(frames)
+}
+
+
 
 pub const DEFAULT_TEXT_SIZE: u16 = 20;
 

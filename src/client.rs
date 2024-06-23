@@ -30,6 +30,7 @@ pub async fn start_ban_ahri_thread(riot_path: String, thread_wait_time:u64) -> A
         let mut riot_client: Option<LolClient> = None;
         loop {
             tokio::time::sleep(tokio::time::Duration::from_millis(thread_wait_time)).await;
+
             if rx.try_recv().is_ok() {
                 break;
             }

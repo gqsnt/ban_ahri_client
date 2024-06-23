@@ -81,7 +81,7 @@ impl Application for MainApp {
                 Command::none()
             }
             Message::ThreadWaitTimeChanged(time) => {
-                self.thread_wait_time = time;
+                self.thread_wait_time = time.max(1);
                 Command::none()
             }
             _ => { Command::none() }

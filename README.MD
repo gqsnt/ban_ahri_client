@@ -5,14 +5,14 @@ This is a Rust application that automatically bans the champion Ahri during the 
 ## Features
 
 - Automatically ban Ahri during the champion select phase.
-- Simple GUI to start and stop the ban process.
+- Simple GUI to start and stop the automatic ban process.
 - Configurable thread wait time for checking the champion select session.
 
 ## Requirements
 
 - Rust (latest stable version recommended)
 - League of Legends installed on your system
-- Access to the Riot API (make sure the game is running)
+- Access to the Riot API (make sure the client is running)
 
 ## Installation
 

@@ -1,0 +1,23 @@
+[package]
+name = "ban_ahri_client"
+version = "0.1.0"
+edition = "2021"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+serde = { version = "1.0.197", features = ["derive"] }
+serde_json = "1.0.115"
+reqwest = { version = "0.12.3", features = ["json", "native-tls"] }
+tokio = { version = "1.37.0", features = ["rt", "rt-multi-thread", "macros", "fs"] }
+iced = { version = "0.12.1", features = ["highlighter", "tokio", "debug", "advanced", "lazy", "image"] }
+iced-box = {version = "0.5.0", features = ["material_icons"]}
+base64 = "0.22.1"
+serde_derive = "1.0.203"
+thiserror = "1.0.61"
+
+[profile.release]
+lto = "fat"
+opt-level = 3
+codegen-units = 1
+panic = "abort"

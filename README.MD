@@ -23,7 +23,7 @@ This is a Rust application that automatically bans the champion Ahri during the 
 
     ```sh
     git clone https://github.com/gqsnt/ban_ahri_client.git
-    cd ban-ahri-client
+    cd ban_ahri_client
     ```
 
 2. Build the application:

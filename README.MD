@@ -2,6 +2,9 @@
 
 This is a Rust application that automatically bans the champion Ahri during the champion select phase in League of Legends. The application uses the Riot API and is built with asynchronous Rust and the Iced GUI library.
 
+
+![Alt text](images/client.png)
+
 ## Features
 
 - Automatically ban Ahri during the champion select phase.
